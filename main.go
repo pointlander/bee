@@ -52,5 +52,20 @@ func LoadBooks() []Book {
 
 func main() {
 	books := LoadBooks()
-	_ = books
+	type Context struct {
+		Distribution [256]uint8
+		Probability  uint8
+	}
+	var model [256]Context
+	text := books[0].Text
+	var context uint8
+	for _, symbol := range text {
+		if model[context].Distribution[symbol] > 33 {
+			for i := range model[context].Distribution {
+				model[context].Distribution[i] >>= 1
+			}
+		}
+		model[context].Distribution[symbol]++
+		context = symbol
+	}
 }
